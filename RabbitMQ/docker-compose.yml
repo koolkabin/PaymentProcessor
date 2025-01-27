@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # Default RabbitMQ port
+      - "15672:15672" # Management plugin port
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+      RABBITMQ_VM_MEMORY_HIGH_WATERMARK_ABSOLUTE: "128MB" # Set memory limit
+      RABBITMQ_ERLANG_COOKIE: "secret_cookie" # Necessary for clustering, but safe to define
+    deploy:
+      resources:
+        limits:
+          memory: 256M # Set a hard limit for memory
+          cpus: "0.5" # Optionally limit CPU usage
+        reservations:
+          memory: 128M # Reserve memory for the service
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq # Persist RabbitMQ data
+
+volumes:
+  rabbitmq-data:
+    driver: local
