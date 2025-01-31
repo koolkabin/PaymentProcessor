@@ -1,4 +1,5 @@
 
+using BaseTypes;
 using Microsoft.EntityFrameworkCore;
 using PaymentProcessor.Model;
 using PaymentProcessor.RabbitMQ;
@@ -17,6 +18,7 @@ namespace PaymentProcessor
             builder.Services.AddDbContext<PaymentDBContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddTransient<PaymentProcessWorker, PaymentProcessWorker>();
             builder.Services.AddTransient<PaymentEventPublisher, PaymentEventPublisher>();
 
             builder.Services.AddControllers();
@@ -36,10 +38,11 @@ namespace PaymentProcessor
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+            app.UseWebSockets();
 
 
             app.MapControllers();
-
+            var _consumer = new PaymentProcessedConsumer(nameof(EnumPaymentEvents.PaymentProcessed));
 
             app.Run();
         }

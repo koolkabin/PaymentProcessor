@@ -27,8 +27,4 @@
     <ProjectReference Include="..\RabbitMQService\RabbitMQService.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-
 </Project>

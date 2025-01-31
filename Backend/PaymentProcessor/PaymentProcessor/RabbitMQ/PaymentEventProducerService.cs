@@ -11,7 +11,7 @@ namespace PaymentProcessor.RabbitMQ
         private readonly RabbitMqService _rabbitMQService;
         private readonly IModel _rabbitMQchannel;
         private readonly IConnection _rabbitMQconection;
-        private const string _routingKey = nameof(EnumPaymentEvents.PaymentRaised);
+        private const string _routingKey = nameof(EnumPaymentEvents.PaymentQueue);
         public PaymentEventPublisher()
         {
             _rabbitMQService = new RabbitMqService();

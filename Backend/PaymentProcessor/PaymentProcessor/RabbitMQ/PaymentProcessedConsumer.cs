@@ -1,17 +1,16 @@
-﻿using RabbitMQService;
+﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQService;
 using System.Text;
-using Newtonsoft.Json;
-using System.Threading.Channels;
 
-namespace PaymentEventConsumer
+namespace PaymentProcessor.RabbitMQ
 {
-    public class PaymentRaisedConsumer
+    public class PaymentProcessedConsumer
     {
         private readonly RabbitMqService _rabbitMQService;
 
-        public PaymentRaisedConsumer(string _queueName)
+        public PaymentProcessedConsumer(string _queueName)
         {
             _rabbitMQService = new RabbitMqService();
 
@@ -19,29 +18,21 @@ namespace PaymentEventConsumer
             {
                 using (var _channel = connection.CreateModel())
                 {
-                    _channel.QueueDeclarePassive(queue: _queueName);//, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
+                    _channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
                     var _consumer = new EventingBasicConsumer(_channel);
-                    // Received event'i sürekli listen modunda olacaktır.
                     _consumer.Received += async (model, ea) =>
                     {
-                        //var body = ea.Body.Span;
                         string message = Encoding.UTF8.GetString(ea.Body.Span);
-                        PaymentRaisedEventModel paymentRaisedEventModel = JsonConvert.DeserializeObject<PaymentRaisedEventModel>(message);
+                        PaymentProcessCompleteEventModel eventData = JsonConvert.DeserializeObject<PaymentProcessCompleteEventModel>(message);
 
-                        string response = await MockApiRequestAsync(paymentRaisedEventModel);
-                        //to third acc 
-                        //no call to balance update section....
-                        //failuer consumer
-                        //success consumer
+                        string response = "lets assume process result has been received and are to save things to db.";
+
                         Console.WriteLine("Queue:{0}, Received Message: \"{1}\", API Response: {2}",
                             _queueName, message, response);
-                        //_channel.BasicAck(ea.DeliveryTag, false); // Explicit act.
-                        //trigger back event regarding -> payment process complete -> publish
                     };
 
-                    _channel.BasicConsume(_queueName, true, _consumer); // Implicit  act.
-                    Console.ReadLine();
+                    _channel.BasicConsume(_queueName, true, _consumer);
+                    //Console.ReadLine();
                 }
             }
         }

@@ -2,8 +2,9 @@
 {
     public enum EnumPaymentEvents
     {
-        PaymentRaised,
-        PaymentProcessed
+        PaymentQueue,
+        PaymentProcessed,
+        PaymentFailed
     }
     public enum EnumPaymentStatus
     {

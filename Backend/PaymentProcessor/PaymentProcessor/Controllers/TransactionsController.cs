@@ -18,6 +18,23 @@ namespace PaymentProcessor.Controllers
             _publisher = publisher;
         }
 
+        [HttpGet("MakePayment")]
+        public async Task MakePayment()
+        {
+            if (Request.HttpContext.WebSockets.IsWebSocketRequest)
+            {
+                var webSocket = await Request.HttpContext.WebSockets.AcceptWebSocketAsync();
+                Console.WriteLine("WebSocket connected");
+
+                var processor = Request.HttpContext.RequestServices.GetRequiredService<PaymentProcessWorker>();
+                await processor.HandleWebSocketAsync(webSocket);
+            }
+            else
+            {
+                Request.HttpContext.Response.StatusCode = 400;
+            }
+        }
+
         [HttpPost("payments")]
         public async Task<IActionResult> InitiatePayment([FromBody] PaymentRequest data)
         {
@@ -34,6 +51,8 @@ namespace PaymentProcessor.Controllers
             //    data.Currency,
             //    Timestamp = data.Timestamp
             //};
+            //balance deduction on sender + on processing balance -> 
+            //publish event
             _publisher.PublishMessage(data);
 
             return Ok(new { Message = "Payment initiated", data.PaymentId });

@@ -1,0 +1,93 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <form [formGroup]="paymentForm" (ngSubmit)="onPaymentSubmit()">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Payment Form</h3>
+          </div>
+          <div class="panel-body">
+            <div formGroupName="customerInfo" class="row">
+              <label for="name" class="col-5">Name:</label>
+              <div class="col-7">
+                <input id="name" formControlName="name" type="text" class="form-control">
+              </div>
+
+              <label for="email" class="col-5">Email:</label>
+              <div class="col-7">
+                <input id="email" formControlName="email" type="email" class="form-control">
+              </div>
+              <label for="phone" class="col-5">Phone:</label>
+              <div class="col-7">
+                <input id="phone" formControlName="phone" type="text" class="form-control">
+              </div>
+            </div>
+            <div formGroupName="paymentInfo" class="row">
+              <label for="amount" class="col-5">Amount:</label>
+              <div class="col-7">
+                <input id="amount" formControlName="amount" type="text" class="form-control">
+              </div>
+              <label for="currency" class="col-5">Currency:</label>
+              <div class="col-7">
+                <input id="currency" formControlName="currency" type="text" class="form-control">
+              </div>
+
+            </div>
+            <div class="row">
+              <label for="paymentMethod" class="col-5">Payment Method:</label>
+              <div class="col-7">
+                <input id="paymentMethodCard" formControlName="paymentMethod" type="radio" value="card" checked>
+                <label for="paymentMethodCard">Card</label>
+                &nbsp;&nbsp;&nbsp;
+
+                <input id="paymentMethodBank" formControlName="paymentMethod" type="radio" value="bank">
+                <label for="paymentMethodBank">Bank</label>
+              </div>
+            </div>
+            <div *ngIf="paymentForm.get('paymentMethod')?.value === 'card'" formGroupName="cardInfo" class="row">
+              <label for="cardNumber" class="col-5">Card Number:</label>
+              <div class="col-7">
+                <input id="cardNumber" formControlName="cardNumber" type="text" class="form-control">
+              </div>
+
+              <label for="expiryDate" class="col-5">Expiry Date:</label>
+              <div class="col-7">
+                <input id="expiryDate" formControlName="expiryDate" type="text" class="form-control">
+              </div>
+              <label for="cvv" class="col-5">CVV:</label>
+              <div class="col-7">
+                <input id="cvv" formControlName="cvv" type="text" class="form-control">
+              </div>
+            </div>
+            <div *ngIf="paymentForm.get('paymentMethod')?.value === 'bank'" formGroupName="bankInfo" class="row">
+              <label for="accountNumber" class="col-5">Account Number:</label>
+              <div class="col-7">
+                <input id="accountNumber" formControlName="accountNumber" type="text" class="form-control">
+              </div>
+              <label for="routingNumber" class="col-5">Routing Number:</label>
+              <div class="col-7">
+                <input id="routingNumber" formControlName="routingNumber" type="text" class="form-control">
+              </div>
+
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button type="submit" class="btn btn-success" [disabled]="!paymentForm.valid || formSubmitting()">
+              <i class="fa fa-submit"></i>
+              Pay</button>
+            <div class="alert alert-info" *ngIf="formSubmitting()">
+              <strong>Submitting... {{formSubmitting()}}</strong>
+            </div>
+            <div class="alert alert-warning" *ngIf="waitingResponse()">
+              <strong>Waiting Response... {{waitingResponse()}}</strong>
+            </div>
+            <div *ngIf="paymentForm.valid">
+              <h4>Form Data</h4>
+              <pre>{{ paymentForm.value | json }}</pre>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
